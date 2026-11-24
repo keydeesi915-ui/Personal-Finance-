@@ -1,1268 +1,555 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MY MONEY, MY RULES 💗</title>
-    <!-- iOS / PWA Support Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MyMoneyRules">
-    <link rel="apple-touch-icon" href="https://api.iconify.design/lucide:heart-handshake.svg?color=%23be185d">
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        blush: {
-                            50: '#fff5f7',
-                            100: '#fde8ed',
-                            200: '#fbcfe8',
-                            300: '#f472b6',
-                            400: '#e11d48',
-                            500: '#be185d',
-                            600: '#9f1239',
-                        },
-                        dusty: '#be185d',
-                        rosegold: '#d97706',
-                        beige: '#fdfbf7',
-                        sand: '#f5efe6'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-                        serif: ['Playfair Display', 'Georgia', 'serif']
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <style>
-        body {
-            background-color: #fdfbf7;
-            font-family: 'Inter', -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .serif-title {
-            font-family: 'Georgia', serif;
-        }
-        /* Custom scrollbar for subtle view */
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #fbcfe8;
-            border-radius: 4px;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(251, 207, 232, 0.5);
-        }
-        .active-tab {
-            color: #be185d;
-            font-weight: 600;
-        }
-        .active-tab i {
-            transform: scale(1.1);
-            color: #be185d;
-        }
-        /* Hide scrollbars for navigation tabs */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#302850">
+<title>My Money Tracker</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f6f4fb;color:#29263d;font:15px Arial,sans-serif;padding-bottom:80px}
+header{background:linear-gradient(135deg,#302850,#7968c9);color:white;padding:25px 18px;border-radius:0 0 25px 25px}
+.brand{font-size:21px;font-weight:bold}
+.sub{font-size:12px;opacity:.8;margin-top:5px}
+.balance{font-size:34px;font-weight:bold;margin:22px 0 15px}
+.quick,.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quick div{background:#ffffff20;padding:12px;border-radius:12px}
+.quick small{opacity:.8}
+.quick strong{display:block;margin-top:5px}
+main{max-width:750px;margin:auto;padding:15px}
+h2{font-size:18px}
+.card,.panel{background:white;border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 4px 18px #3028500c}
+.metric{font-size:21px;font-weight:bold;margin-top:7px}
+.muted{font-size:12px;color:#88869a}
+.green{color:#168663}
+.red{color:#d65b68}
+button{cursor:pointer;font-size:13px}
+.primary{background:#7665d8;color:white;border:0;border-radius:10px;padding:11px 14px;font-weight:bold}
+.secondary{background:#eeeaff;color:#6c5ac6;border:0;border-radius:9px;padding:8px 11px}
+.danger{background:#fff0f0;color:#cf4e60;border:0;border-radius:9px;padding:8px 11px}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #eee;display:flex;justify-content:space-around;padding:9px 2px;z-index:5}
+.tabs button{border:0;background:none;color:#888;font-size:10px;flex:1}
+.tabs button span{display:block;font-size:20px;margin-bottom:4px}
+.tabs button.active{color:#7665d8;font-weight:bold}
+.hidden{display:none!important}
+label{display:block;font-size:12px;color:#777;margin:12px 0 5px}
+input,select{width:100%;padding:12px;border:1px solid #e4e1ed;border-radius:10px;font-size:15px;background:white}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.full{grid-column:1/-1}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #eee}
+.row:last-child{border:0}
+.progress{height:8px;background:#eeeaf5;border-radius:10px;margin:10px 0;overflow:hidden}
+.progress i{display:block;height:100%;background:#7968c9}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.empty{text-align:center;color:#999;padding:25px 5px;font-size:13px}
+.modal{display:none;position:fixed;inset:0;background:#17132699;z-index:10;align-items:flex-end;justify-content:center;padding:12px}
+.modal.open{display:flex}
+.sheet{background:white;border-radius:20px;padding:18px;width:100%;max-width:550px;max-height:90vh;overflow:auto}
+.sheethead{display:flex;justify-content:space-between;align-items:center}
+.close{border:0;border-radius:50%;padding:8px 12px;background:#eee}
+.chart{width:100%;height:200px}
+@media(min-width:650px){.modal{align-items:center}}
+</style>
 </head>
-<body class="text-slate-700 min-h-screen flex flex-col justify-between pb-24">
-
-    <!-- Header Section -->
-    <header class="sticky top-0 z-30 glass-card border-b border-blush-200 px-4 py-3 sm:px-6">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="w-10 h-10 rounded-full bg-blush-100 flex items-center justify-center text-dusty shadow-sm">
-                    <i data-lucide="sparkles" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-tight text-slate-800 serif-title">MY MONEY, MY RULES <span class="text-xs">💗</span></h1>
-                    <p class="text-xs text-dusty font-medium tracking-wide">Personal Financial Sanctuary</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="openModal('quick-action-modal')" class="bg-gradient-to-r from-blush-500 to-blush-600 text-white p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold shadow-md hover:shadow-lg transition flex items-center space-x-1">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">Add Entry</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- App Main Container -->
-    <main class="max-w-4xl w-full mx-auto px-4 py-6 flex-1">
-
-        <!-- TAB 1: DASHBOARD OVERVIEW -->
-        <section id="tab-dashboard" class="tab-content space-y-6">
-            <!-- Greeting & Quick Stats -->
-            <div class="bg-gradient-to-br from-blush-100 via-blush-50 to-amber-50 rounded-3xl p-6 border border-blush-200 shadow-sm relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-blush-200/40 rounded-full blur-2xl"></div>
-                <p class="text-xs font-semibold uppercase tracking-widest text-dusty mb-1">Financial Overview</p>
-                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4 serif-title">Welcome Back, Beautiful! ✨</h2>
-                
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div class="bg-white/80 backdrop-blur p-3.5 rounded-2xl border border-blush-100 shadow-sm">
-                        <span class="text-xs text-slate-500 font-medium block mb-0.5">Available Balance</span>
-                        <span id="dash-balance" class="text-lg font-bold text-slate-800">₱0.00</span>
-                    </div>
-                    <div class="bg-white/80 backdrop-blur p-3.5 rounded-2xl border border-blush-100 shadow-sm">
-                        <span class="text-xs text-slate-500 font-medium block mb-0.5">Monthly Income</span>
-                        <span id="dash-income" class="text-lg font-bold text-emerald-600">₱0.00</span>
-                    </div>
-                    <div class="bg-white/80 backdrop-blur p-3.5 rounded-2xl border border-blush-100 shadow-sm">
-                        <span class="text-xs text-slate-500 font-medium block mb-0.5">Monthly Expenses</span>
-                        <span id="dash-expenses" class="text-lg font-bold text-rose-500">₱0.00</span>
-                    </div>
-                    <div class="bg-white/80 backdrop-blur p-3.5 rounded-2xl border border-blush-100 shadow-sm">
-                        <span class="text-xs text-slate-500 font-medium block mb-0.5">Total Savings</span>
-                        <span id="dash-savings" class="text-lg font-bold text-amber-600">₱0.00</span>
-                    </div>
-                </div>
-
-                <!-- Secondary Summary Grid -->
-                <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-blush-200/60 text-xs">
-                    <div>
-                        <span class="text-slate-500">Debts Owed:</span>
-                        <span id="dash-debt-owed" class="font-bold text-rose-600 block sm:inline">₱0.00</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-500">Receivables:</span>
-                        <span id="dash-receivable" class="font-bold text-emerald-600 block sm:inline">₱0.00</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-500">Upcoming Bills:</span>
-                        <span id="dash-upcoming-bills" class="font-bold text-amber-600 block sm:inline">₱0.00</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dashboard Charts -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-4 sm:p-5 rounded-3xl border border-blush-100 shadow-sm">
-                    <h3 class="text-sm font-semibold text-slate-700 mb-3 flex items-center justify-between">
-                        <span>Spending Breakdown</span>
-                        <i data-lucide="pie-chart" class="w-4 h-4 text-dusty"></i>
-                    </h3>
-                    <div class="h-48 relative flex items-center justify-center">
-                        <canvas id="chart-spending"></canvas>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 sm:p-5 rounded-3xl border border-blush-100 shadow-sm">
-                    <h3 class="text-sm font-semibold text-slate-700 mb-3 flex items-center justify-between">
-                        <span>Income vs Expenses</span>
-                        <i data-lucide="bar-chart-2" class="w-4 h-4 text-dusty"></i>
-                    </h3>
-                    <div class="h-48 relative flex items-center justify-center">
-                        <canvas id="chart-income-vs-expense"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity List -->
-            <div class="bg-white p-5 rounded-3xl border border-blush-100 shadow-sm">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-semibold text-slate-700 flex items-center space-x-2">
-                        <i data-lucide="history" class="w-4 h-4 text-dusty"></i>
-                        <span>Recent Transactions</span>
-                    </h3>
-                    <span class="text-xs text-dusty font-medium cursor-pointer" onclick="switchTab('expenses')">View All</span>
-                </div>
-                <div id="dashboard-recent-list" class="space-y-3">
-                    <!-- Populated dynamically -->
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 2: EXPENSES -->
-        <section id="tab-expenses" class="tab-content hidden space-y-5">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800 serif-title">Expense Log 💸</h2>
-                    <p class="text-xs text-slate-500">Track and manage every single expense</p>
-                </div>
-                <button onclick="openExpenseModal()" class="bg-dusty text-white px-4 py-2 rounded-2xl text-xs font-semibold shadow flex items-center space-x-1">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>New Expense</span>
-                </button>
-            </div>
-
-            <!-- Expense Category Warning List -->
-            <div id="expense-budget-warnings" class="hidden space-y-2">
-                <!-- Dynamically populated warnings if budget threshold is exceeded -->
-            </div>
-
-            <!-- Expense List Table / Cards -->
-            <div class="bg-white rounded-3xl border border-blush-100 shadow-sm overflow-hidden p-4">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-                    <input type="text" id="expense-search" oninput="renderExpenses()" placeholder="Search expenses..." class="bg-sand/60 px-3 py-1.5 rounded-xl text-xs border border-blush-100 focus:outline-none focus:ring-1 focus:ring-dusty w-full sm:w-48">
-                    <select id="expense-filter-cat" onchange="renderExpenses()" class="bg-sand/60 px-3 py-1.5 rounded-xl text-xs border border-blush-100 focus:outline-none focus:ring-1 focus:ring-dusty text-slate-600">
-                        <option value="ALL">All Categories</option>
-                        <option value="Food">Food</option>
-                        <option value="Transportation">Transportation</option>
-                        <option value="Groceries">Groceries</option>
-                        <option value="Shopping">Shopping</option>
-                        <option value="Bills">Bills</option>
-                        <option value="Personal Care">Personal Care</option>
-                        <option value="Family">Family</option>
-                        <option value="Education">Education</option>
-                        <option value="Health">Health</option>
-                        <option value="Entertainment">Entertainment</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <div id="expense-list-container" class="space-y-3">
-                    <!-- Dynamic rendering -->
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 3: INCOME -->
-        <section id="tab-income" class="tab-content hidden space-y-5">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800 serif-title">Income & Salary 💰</h2>
-                    <p class="text-xs text-slate-500">Record your earnings and extra funds</p>
-                </div>
-                <button onclick="openIncomeModal()" class="bg-emerald-600 text-white px-4 py-2 rounded-2xl text-xs font-semibold shadow flex items-center space-x-1">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>Log Income</span>
-                </button>
-            </div>
-
-            <div class="bg-white rounded-3xl border border-blush-100 shadow-sm p-4">
-                <div id="income-list-container" class="space-y-3">
-                    <!-- Dynamic rendering -->
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 4: DEBT TRACKER -->
-        <section id="tab-debts" class="tab-content hidden space-y-5">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800 serif-title">Debts & Receivables 🤝</h2>
-                    <p class="text-xs text-slate-500">Keep track of money owed and receivables</p>
-                </div>
-                <button onclick="openDebtModal()" class="bg-dusty text-white px-3 py-2 rounded-2xl text-xs font-semibold shadow flex items-center space-x-1">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>Add Record</span>
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- I OWE (DEBTS) -->
-                <div class="bg-white p-4 rounded-3xl border border-rose-100 shadow-sm">
-                    <h3 class="text-sm font-bold text-rose-700 mb-3 flex items-center space-x-1">
-                        <i data-lucide="arrow-up-right" class="w-4 h-4 text-rose-500"></i>
-                        <span>I Owe (My Debts)</span>
-                    </h3>
-                    <div id="debt-i-owe-container" class="space-y-3">
-                        <!-- Rendered dynamically -->
-                    </div>
-                </div>
-
-                <!-- OWED TO ME (RECEIVABLES) -->
-                <div class="bg-white p-4 rounded-3xl border border-emerald-100 shadow-sm">
-                    <h3 class="text-sm font-bold text-emerald-700 mb-3 flex items-center space-x-1">
-                        <i data-lucide="arrow-down-left" class="w-4 h-4 text-emerald-500"></i>
-                        <span>Owed to Me (Receivables)</span>
-                    </h3>
-                    <div id="debt-owed-me-container" class="space-y-3">
-                        <!-- Rendered dynamically -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 5: SAVINGS & GOALS -->
-        <section id="tab-savings" class="tab-content hidden space-y-5">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800 serif-title">Savings & Goals 🌸</h2>
-                    <p class="text-xs text-slate-500">Nurture your dreams and emergency funds</p>
-                </div>
-                <button onclick="openSavingsModal()" class="bg-amber-600 text-white px-3 py-2 rounded-2xl text-xs font-semibold shadow flex items-center space-x-1">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>New Goal</span>
-                </button>
-            </div>
-
-            <div id="savings-goals-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Rendered dynamically -->
-            </div>
-        </section>
-
-        <!-- TAB 6: BUDGET & ALERTS -->
-        <section id="tab-budget" class="tab-content hidden space-y-5">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800 serif-title">Monthly Budget 📊</h2>
-                    <p class="text-xs text-slate-500">Set limits and avoid overspending</p>
-                </div>
-            </div>
-
-            <!-- Overall Budget Box -->
-            <div class="bg-gradient-to-r from-dusty to-blush-600 text-white p-5 rounded-3xl shadow-md">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-medium uppercase tracking-wider opacity-90">Total Monthly Budget Limit</span>
-                    <button onclick="promptTotalBudget()" class="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded-lg backdrop-blur">Set Limit</button>
-                </div>
-                <div id="budget-total-val" class="text-3xl font-bold mb-2">₱0.00</div>
-                <div class="w-full bg-white/30 h-2.5 rounded-full overflow-hidden">
-                    <div id="budget-total-progress-bar" class="bg-white h-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <div class="flex justify-between text-xs mt-2 opacity-90">
-                    <span id="budget-spent-lbl">Spent: ₱0.00</span>
-                    <span id="budget-remain-lbl">Remaining: ₱0.00</span>
-                </div>
-            </div>
-
-            <!-- Category Budget Allocations -->
-            <div class="bg-white p-5 rounded-3xl border border-blush-100 shadow-sm">
-                <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center justify-between">
-                    <span>Category Budget Limits</span>
-                    <span class="text-xs text-dusty font-normal">Click category to set limit</span>
-                </h3>
-                <div id="budget-categories-container" class="space-y-4">
-                    <!-- Rendered dynamically -->
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 7: BILLS & REMINDERS -->
-        <section id="tab-bills" class="tab-content hidden space-y-5">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800 serif-title">Bills & Subscriptions 📑</h2>
-                    <p class="text-xs text-slate-500">Never miss a due date again</p>
-                </div>
-                <button onclick="openBillModal()" class="bg-dusty text-white px-3 py-2 rounded-2xl text-xs font-semibold shadow flex items-center space-x-1">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>Add Bill</span>
-                </button>
-            </div>
-
-            <div id="bills-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Rendered dynamically -->
-            </div>
-        </section>
-
-        <!-- TAB 8: REPORTS & EXPORT -->
-        <section id="tab-reports" class="tab-content hidden space-y-5">
-            <div>
-                <h2 class="text-xl font-bold text-slate-800 serif-title">Financial Reports 📈</h2>
-                <p class="text-xs text-slate-500">Detailed insights and data backup</p>
-            </div>
-
-            <div class="bg-white p-5 rounded-3xl border border-blush-100 shadow-sm space-y-4">
-                <h3 class="text-sm font-bold text-slate-700">Financial Summary Statement</h3>
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <div class="p-3 bg-blush-50 rounded-2xl">
-                        <span class="text-slate-500 block">Total Recorded Income</span>
-                        <span id="report-total-income" class="text-base font-bold text-emerald-600">₱0.00</span>
-                    </div>
-                    <div class="p-3 bg-blush-50 rounded-2xl">
-                        <span class="text-slate-500 block">Total Recorded Expenses</span>
-                        <span id="report-total-expense" class="text-base font-bold text-rose-600">₱0.00</span>
-                    </div>
-                    <div class="p-3 bg-blush-50 rounded-2xl">
-                        <span class="text-slate-500 block">Net Financial Savings</span>
-                        <span id="report-net-savings" class="text-base font-bold text-amber-600">₱0.00</span>
-                    </div>
-                    <div class="p-3 bg-blush-50 rounded-2xl">
-                        <span class="text-slate-500 block">Active Savings Goals</span>
-                        <span id="report-goals-count" class="text-base font-bold text-dusty">0 Goals</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Backup & Export -->
-            <div class="bg-white p-5 rounded-3xl border border-blush-100 shadow-sm">
-                <h3 class="text-sm font-bold text-slate-700 mb-2">Data Backup & Sync</h3>
-                <p class="text-xs text-slate-500 mb-4">Export your financial records or restore them onto another device.</p>
-                <div class="flex flex-wrap gap-3">
-                    <button onclick="exportDataJSON()" class="bg-sand text-slate-700 border border-blush-200 px-4 py-2 rounded-2xl text-xs font-semibold flex items-center space-x-1 shadow-sm hover:bg-blush-100 transition">
-                        <i data-lucide="download" class="w-4 h-4 text-dusty"></i>
-                        <span>Export Backup (JSON)</span>
-                    </button>
-                    <label class="bg-sand text-slate-700 border border-blush-200 px-4 py-2 rounded-2xl text-xs font-semibold flex items-center space-x-1 shadow-sm hover:bg-blush-100 transition cursor-pointer">
-                        <i data-lucide="upload" class="w-4 h-4 text-dusty"></i>
-                        <span>Import Backup</span>
-                        <input type="file" id="import-file" accept=".json" onchange="importDataJSON(event)" class="hidden">
-                    </label>
-                    <button onclick="resetDataPrompt()" class="bg-rose-50 text-rose-600 border border-rose-200 px-4 py-2 rounded-2xl text-xs font-semibold flex items-center space-x-1 shadow-sm hover:bg-rose-100 transition">
-                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                        <span>Reset Data</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Bottom Navigation Bar (iPhone Friendly) -->
-    <nav class="fixed bottom-0 left-0 right-0 glass-card border-t border-blush-200 z-40 px-2 py-2 shadow-lg">
-        <div class="max-w-md mx-auto flex justify-between items-center overflow-x-auto no-scrollbar space-x-1 text-slate-400">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center py-1 text-center min-w-[55px] active-tab">
-                <i data-lucide="layout-dashboard" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px]">Overview</span>
-            </button>
-            <button onclick="switchTab('expenses')" id="nav-expenses" class="flex-1 flex flex-col items-center py-1 text-center min-w-[55px]">
-                <i data-lucide="credit-card" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px]">Expenses</span>
-            </button>
-            <button onclick="switchTab('income')" id="nav-income" class="flex-1 flex flex-col items-center py-1 text-center min-w-[55px]">
-                <i data-lucide="wallet" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px]">Income</span>
-            </button>
-            <button onclick="switchTab('debts')" id="nav-debts" class="flex-1 flex flex-col items-center py-1 text-center min-w-[55px]">
-                <i data-lucide="users" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px]">Debts</span>
-            </button>
-            <button onclick="switchTab('savings')" id="nav-savings" class="flex-1 flex flex-col items-center py-1 text-center min-w-[55px]">
-                <i data-lucide="piggy-bank" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px]">Savings</span>
-            </button>
-            <button onclick="switchTab('budget')" id="nav-budget" class="flex-1 flex flex-col items-center py-1 text-center min-w-[55px]">
-                <i data-lucide="sliders" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px]">Budget</span>
-            </button>
-            <button onclick="switchTab('bills')" id="nav-bills" class="flex-1 flex flex-col items-center py-1 text-center min-w-[55px]">
-                <i data-lucide="receipt" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px]">Bills</span>
-            </button>
-            <button onclick="switchTab('reports')" id="nav-reports" class="flex-1 flex flex-col items-center py-1 text-center min-w-[55px]">
-                <i data-lucide="bar-chart-3" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px]">Reports</span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- MODALS -->
-
-    <!-- Quick Entry Modal -->
-    <div id="quick-action-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-blush-100 relative space-y-4">
-            <button onclick="closeModal('quick-action-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-            <h3 class="text-lg font-bold text-slate-800 serif-title">Quick Financial Entry ✨</h3>
-            
-            <div class="grid grid-cols-2 gap-2 p-1 bg-sand/60 rounded-2xl">
-                <button type="button" id="quick-type-expense-btn" onclick="setQuickType('EXPENSE')" class="py-2 rounded-xl text-xs font-bold text-white bg-dusty shadow">Expense</button>
-                <button type="button" id="quick-type-income-btn" onclick="setQuickType('INCOME')" class="py-2 rounded-xl text-xs font-bold text-slate-600">Income</button>
-            </div>
-
-            <form id="quick-entry-form" onsubmit="handleQuickSubmit(event)" class="space-y-3">
-                <input type="hidden" id="quick-type" value="EXPENSE">
-                
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Title / Description</label>
-                    <input type="text" id="quick-title" required placeholder="e.g., Starbucks Coffee, Salary" class="w-full px-3 py-2 text-xs bg-sand/40 border border-blush-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-dusty">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Amount (₱)</label>
-                        <input type="number" step="0.01" id="quick-amount" required placeholder="0.00" class="w-full px-3 py-2 text-xs bg-sand/40 border border-blush-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-dusty">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Category</label>
-                        <select id="quick-category" class="w-full px-3 py-2 text-xs bg-sand/40 border border-blush-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-dusty">
-                            <!-- Populated dynamically via JS -->
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
-                    <input type="date" id="quick-date" required class="w-full px-3 py-2 text-xs bg-sand/40 border border-blush-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-dusty">
-                </div>
-
-                <button type="submit" class="w-full py-2.5 bg-dusty text-white font-semibold rounded-2xl text-xs shadow-md hover:bg-blush-600 transition">Save Entry</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Savings Deposit/Withdrawal Modal -->
-    <div id="savings-action-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-blush-100 relative space-y-4">
-            <button onclick="closeModal('savings-action-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-            <h3 id="savings-modal-title" class="text-lg font-bold text-slate-800 serif-title">Savings Action</h3>
-
-            <form id="savings-action-form" onsubmit="handleSavingsAction(event)" class="space-y-3">
-                <input type="hidden" id="savings-goal-id">
-                <div class="grid grid-cols-2 gap-2 p-1 bg-sand/60 rounded-2xl">
-                    <button type="button" id="sav-type-dep-btn" onclick="setSavingsActionType('DEPOSIT')" class="py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 shadow">Deposit (+)</button>
-                    <button type="button" id="sav-type-with-btn" onclick="setSavingsActionType('WITHDRAW')" class="py-2 rounded-xl text-xs font-bold text-slate-600">Withdraw (-)</button>
-                </div>
-                <input type="hidden" id="savings-action-type" value="DEPOSIT">
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Amount (₱)</label>
-                    <input type="number" step="0.01" id="savings-action-amount" required placeholder="0.00" class="w-full px-3 py-2 text-xs bg-sand/40 border border-blush-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-dusty">
-                </div>
-
-                <button type="submit" class="w-full py-2.5 bg-dusty text-white font-semibold rounded-2xl text-xs shadow-md hover:bg-blush-600 transition">Confirm Transaction</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Custom Notification Toast -->
-    <div id="toast" class="fixed top-4 right-4 z-50 bg-slate-800 text-white px-4 py-3 rounded-2xl shadow-xl text-xs flex items-center space-x-2 transition-all transform translate-y-[-150%] opacity-0">
-        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
-        <span id="toast-msg">Action completed!</span>
-    </div>
-
-    <!-- JAVASCRIPT LOGIC & STATE MANAGEMENT -->
-    <script>
-        // --- INITIAL DATA & APPLICATION STATE ---
-        const DEFAULT_STATE = {
-            expenses: [
-                { id: 'exp-1', title: 'Iced Matcha Latte', amount: 185, category: 'Food', date: '2026-11-01' },
-                { id: 'exp-2', title: 'Monthly Grocery Run', amount: 3450, category: 'Groceries', date: '2026-10-28' },
-                { id: 'exp-3', title: 'Grab Car to Office', amount: 320, category: 'Transportation', date: '2026-10-30' }
-            ],
-            income: [
-                { id: 'inc-1', title: 'Semi-Monthly Salary', amount: 32500, category: 'Salary', date: '2026-10-30' },
-                { id: 'inc-2', title: 'Freelance Design Bonus', amount: 8500, category: 'Side Hustle', date: '2026-10-25' }
-            ],
-            debts: [
-                { id: 'dbt-1', person: 'BDO Credit Card', amount: 12500, remaining: 7500, type: 'MY_DEBT', dueDate: '2026-11-15', status: 'Partial' },
-                { id: 'dbt-2', person: 'Sarah (Office Friend)', amount: 1500, remaining: 1500, type: 'OWED_TO_ME', dueDate: '2026-11-10', status: 'Unpaid' }
-            ],
-            savings: [
-                { id: 'sav-1', title: 'Emergency Fund 🛡️', target: 50000, current: 28500 },
-                { id: 'sav-2', title: 'Tokyo Trip 🌸', target: 80000, current: 34000 },
-                { id: 'sav-3', title: 'New Designer Bag ✨', target: 25000, current: 12000 }
-            ],
-            bills: [
-                { id: 'bil-1', title: 'Meralco Electric Bill', amount: 3850, dueDate: '2026-11-12', status: 'UNPAID' },
-                { id: 'bil-2', title: 'PLDT Home Wifi', amount: 1899, dueDate: '2026-11-05', status: 'PAID' },
-                { id: 'bil-3', title: 'Netflix & Spotify', amount: 749, dueDate: '2026-11-20', status: 'UNPAID' }
-            ],
-            budget: {
-                totalLimit: 30000,
-                categories: {
-                    'Food': 8000,
-                    'Groceries': 10000,
-                    'Transportation': 4000,
-                    'Shopping': 5000,
-                    'Bills': 7000
-                }
-            }
-        };
-
-        // App Data Loaded from LocalStorage or Defaults
-        let appData = JSON.parse(localStorage.getItem('MY_MONEY_RULES_DATA')) || DEFAULT_STATE;
-
-        // Chart References
-        let spendingChart = null;
-        let incVsExpChart = null;
-
-        // --- LIFECYCLE INITIALIZATION ---
-        window.onload = function() {
-            lucide.createIcons();
-            initCharts();
-            renderAllViews();
-            document.getElementById('quick-date').valueAsDate = new Date();
-        };
-
-        function saveData() {
-            localStorage.setItem('MY_MONEY_RULES_DATA', JSON.stringify(appData));
-            renderAllViews();
-        }
-
-        // --- RENDER & REFRESH ENTIRE UI ---
-        function renderAllViews() {
-            renderDashboard();
-            renderExpenses();
-            renderIncome();
-            renderDebts();
-            renderSavings();
-            renderBudget();
-            renderBills();
-            renderReports();
-            updateCharts();
-        }
-
-        // --- NAVIGATION LOGIC ---
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-
-            // Nav Bar Icon Styles
-            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active-tab'));
-            const activeBtn = document.getElementById(`nav-${tabName}`);
-            if (activeBtn) activeBtn.classList.add('active-tab');
-        }
-
-        // --- FORMATTERS ---
-        function formatPHP(amount) {
-            return '₱' + Number(amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        // --- DASHBOARD LOGIC ---
-        function renderDashboard() {
-            const totalInc = appData.income.reduce((sum, item) => sum + Number(item.amount), 0);
-            const totalExp = appData.expenses.reduce((sum, item) => sum + Number(item.amount), 0);
-            const totalSav = appData.savings.reduce((sum, item) => sum + Number(item.current), 0);
-            const balance = totalInc - totalExp - totalSav;
-
-            const totalDebtsOwed = appData.debts.filter(d => d.type === 'MY_DEBT').reduce((sum, d) => sum + Number(d.remaining), 0);
-            const totalReceivables = appData.debts.filter(d => d.type === 'OWED_TO_ME').reduce((sum, d) => sum + Number(d.remaining), 0);
-            const upcomingBillsCount = appData.bills.filter(b => b.status === 'UNPAID').length;
-
-            document.getElementById('dash-balance').innerText = formatPHP(balance);
-            document.getElementById('dash-income').innerText = formatPHP(totalInc);
-            document.getElementById('dash-expenses').innerText = formatPHP(totalExp);
-            document.getElementById('dash-savings').innerText = formatPHP(totalSav);
-
-            document.getElementById('dash-debt-owed').innerText = formatPHP(totalDebtsOwed);
-            document.getElementById('dash-receivable').innerText = formatPHP(totalReceivables);
-            document.getElementById('dash-upcoming-bills').innerText = `${upcomingBillsCount} Unpaid`;
-
-            // Recent Items
-            const recentContainer = document.getElementById('dashboard-recent-list');
-            const allItems = [
-                ...appData.expenses.map(e => ({ ...e, type: 'EXPENSE' })),
-                ...appData.income.map(i => ({ ...i, type: 'INCOME' }))
-            ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
-
-            if (allItems.length === 0) {
-                recentContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-2">No transactions recorded yet.</p>`;
-                return;
-            }
-
-            recentContainer.innerHTML = allItems.map(item => `
-                <div class="flex items-center justify-between p-2.5 rounded-2xl bg-sand/40 border border-blush-100">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-xl ${item.type === 'INCOME' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'} flex items-center justify-center">
-                            <i data-lucide="${item.type === 'INCOME' ? 'arrow-down-left' : 'arrow-up-right'}" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-semibold text-slate-800">${item.title}</h4>
-                            <p class="text-[10px] text-slate-400">${item.category} • ${item.date}</p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold ${item.type === 'INCOME' ? 'text-emerald-600' : 'text-rose-600'}">
-                        ${item.type === 'INCOME' ? '+' : '-'}${formatPHP(item.amount)}
-                    </span>
-                </div>
-            `).join('');
-
-            lucide.createIcons();
-        }
-
-        // --- EXPENSES LOGIC ---
-        function renderExpenses() {
-            const search = document.getElementById('expense-search').value.toLowerCase();
-            const filterCat = document.getElementById('expense-filter-cat').value;
-
-            const filtered = appData.expenses.filter(exp => {
-                const matchesSearch = exp.title.toLowerCase().includes(search);
-                const matchesCat = filterCat === 'ALL' || exp.category === filterCat;
-                return matchesSearch && matchesCat;
-            });
-
-            const container = document.getElementById('expense-list-container');
-            if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No expenses found.</p>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(exp => `
-                <div class="flex items-center justify-between p-3 rounded-2xl bg-sand/30 border border-blush-100 hover:border-blush-300 transition">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-9 h-9 rounded-xl bg-blush-100 text-dusty flex items-center justify-center">
-                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-800">${exp.title}</h4>
-                            <span class="text-[10px] bg-blush-50 text-dusty px-2 py-0.5 rounded-md border border-blush-200">${exp.category}</span>
-                            <span class="text-[10px] text-slate-400 ml-1">${exp.date}</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <span class="text-xs font-bold text-rose-600">-${formatPHP(exp.amount)}</span>
-                        <button onclick="deleteExpense('${exp.id}')" class="text-slate-400 hover:text-rose-600 p-1">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
-            lucide.createIcons();
-            checkBudgetWarnings();
-        }
-
-        function deleteExpense(id) {
-            appData.expenses = appData.expenses.filter(e => e.id !== id);
-            saveData();
-            showToast('Expense deleted');
-        }
-
-        function openExpenseModal() {
-            setQuickType('EXPENSE');
-            openModal('quick-action-modal');
-        }
-
-        // --- INCOME LOGIC ---
-        function renderIncome() {
-            const container = document.getElementById('income-list-container');
-            if (appData.income.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No income records yet.</p>`;
-                return;
-            }
-
-            container.innerHTML = appData.income.map(inc => `
-                <div class="flex items-center justify-between p-3 rounded-2xl bg-emerald-50/50 border border-emerald-100">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                            <i data-lucide="trending-up" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-800">${inc.title}</h4>
-                            <span class="text-[10px] bg-emerald-100/60 text-emerald-700 px-2 py-0.5 rounded-md">${inc.category}</span>
-                            <span class="text-[10px] text-slate-400 ml-1">${inc.date}</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <span class="text-xs font-bold text-emerald-600">+${formatPHP(inc.amount)}</span>
-                        <button onclick="deleteIncome('${inc.id}')" class="text-slate-400 hover:text-rose-600 p-1">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
-            lucide.createIcons();
-        }
-
-        function deleteIncome(id) {
-            appData.income = appData.income.filter(i => i.id !== id);
-            saveData();
-            showToast('Income entry removed');
-        }
-
-        function openIncomeModal() {
-            setQuickType('INCOME');
-            openModal('quick-action-modal');
-        }
-
-        // --- DEBTS LOGIC ---
-        function renderDebts() {
-            const iOweContainer = document.getElementById('debt-i-owe-container');
-            const owedMeContainer = document.getElementById('debt-owed-me-container');
-
-            const iOwe = appData.debts.filter(d => d.type === 'MY_DEBT');
-            const owedMe = appData.debts.filter(d => d.type === 'OWED_TO_ME');
-
-            iOweContainer.innerHTML = iOwe.length === 0 ? `<p class="text-xs text-slate-400 italic py-2">No active debts!</p>` : iOwe.map(d => `
-                <div class="p-3 bg-rose-50/40 border border-rose-100 rounded-2xl space-y-1.5">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-800">${d.person}</h4>
-                            <p class="text-[10px] text-slate-400">Due: ${d.dueDate}</p>
-                        </div>
-                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${d.remaining === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.remaining === 0 ? 'PAID' : d.status}</span>
-                    </div>
-                    <div class="flex justify-between items-center text-xs pt-1">
-                        <span class="text-slate-500">Remaining: <b class="text-slate-700">${formatPHP(d.remaining)}</b> / ${formatPHP(d.amount)}</span>
-                        <div class="space-x-1">
-                            <button onclick="payDebt('${d.id}')" class="text-[10px] bg-white border border-rose-200 text-rose-600 px-2 py-0.5 rounded-lg shadow-sm">Pay</button>
-                            <button onclick="deleteDebt('${d.id}')" class="text-slate-400 hover:text-rose-600"><i data-lucide="trash-2" class="w-3 h-3 inline"></i></button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            owedMeContainer.innerHTML = owedMe.length === 0 ? `<p class="text-xs text-slate-400 italic py-2">No receivables.</p>` : owedMe.map(d => `
-                <div class="p-3 bg-emerald-50/40 border border-emerald-100 rounded-2xl space-y-1.5">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-800">${d.person}</h4>
-                            <p class="text-[10px] text-slate-400">Due: ${d.dueDate}</p>
-                        </div>
-                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${d.remaining === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${d.remaining === 0 ? 'PAID' : d.status}</span>
-                    </div>
-                    <div class="flex justify-between items-center text-xs pt-1">
-                        <span class="text-slate-500">Remaining: <b class="text-slate-700">${formatPHP(d.remaining)}</b> / ${formatPHP(d.amount)}</span>
-                        <div class="space-x-1">
-                            <button onclick="payDebt('${d.id}')" class="text-[10px] bg-white border border-emerald-200 text-emerald-600 px-2 py-0.5 rounded-lg shadow-sm">Receive</button>
-                            <button onclick="deleteDebt('${d.id}')" class="text-slate-400 hover:text-rose-600"><i data-lucide="trash-2" class="w-3 h-3 inline"></i></button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            lucide.createIcons();
-        }
-
-        function payDebt(id) {
-            const debt = appData.debts.find(d => d.id === id);
-            if (!debt || debt.remaining === 0) return;
-            const payVal = prompt(`Enter payment amount towards ${debt.person}:`, debt.remaining);
-            if (payVal && !isNaN(payVal)) {
-                debt.remaining = Math.max(0, debt.remaining - Number(payVal));
-                if (debt.remaining === 0) debt.status = 'Paid';
-                saveData();
-                showToast('Debt balance updated');
-            }
-        }
-
-        function deleteDebt(id) {
-            appData.debts = appData.debts.filter(d => d.id !== id);
-            saveData();
-            showToast('Debt record removed');
-        }
-
-        function openDebtModal() {
-            const person = prompt("Enter Person or Institution Name:");
-            if (!person) return;
-            const amount = prompt("Enter Total Amount (₱):");
-            if (!amount || isNaN(amount)) return;
-            const typeChoice = confirm("Is this YOUR debt (Click OK) or money OWED TO YOU (Click Cancel)?");
-            const dueDate = prompt("Due date (YYYY-MM-DD):", new Date().toISOString().split('T')[0]);
-
-            appData.debts.push({
-                id: 'dbt-' + Date.now(),
-                person: person,
-                amount: Number(amount),
-                remaining: Number(amount),
-                type: typeChoice ? 'MY_DEBT' : 'OWED_TO_ME',
-                dueDate: dueDate || 'N/A',
-                status: 'Unpaid'
-            });
-            saveData();
-            showToast('Debt record added');
-        }
-
-        // --- SAVINGS LOGIC ---
-        function renderSavings() {
-            const container = document.getElementById('savings-goals-grid');
-            container.innerHTML = appData.savings.map(sav => {
-                const pct = Math.min(100, Math.round((sav.current / sav.target) * 100));
-                return `
-                    <div class="p-4 bg-white rounded-3xl border border-blush-100 shadow-sm space-y-3">
-                        <div class="flex justify-between items-start">
-                            <h3 class="text-sm font-bold text-slate-800">${sav.title}</h3>
-                            <span class="text-xs font-bold text-dusty">${pct}%</span>
-                        </div>
-                        <div class="w-full bg-sand h-2.5 rounded-full overflow-hidden">
-                            <div class="bg-gradient-to-r from-dusty to-blush-300 h-full transition-all duration-300" style="width: ${pct}%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs text-slate-500">
-                            <span>Saved: <b class="text-slate-700">${formatPHP(sav.current)}</b></span>
-                            <span>Target: ${formatPHP(sav.target)}</span>
-                        </div>
-                        <div class="flex justify-end space-x-2 pt-2 border-t border-blush-50">
-                            <button onclick="openSavingsAction('${sav.id}')" class="text-xs bg-blush-100 text-dusty px-3 py-1.5 rounded-xl font-semibold hover:bg-blush-200 transition">Adjust Balance</button>
-                            <button onclick="deleteSavings('${sav.id}')" class="text-slate-400 hover:text-rose-600 px-2 py-1.5"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            lucide.createIcons();
-        }
-
-        function openSavingsModal() {
-            const title = prompt("Enter Savings Goal Name (e.g., New Laptop 💻):");
-            if (!title) return;
-            const target = prompt("Target Amount (₱):");
-            if (!target || isNaN(target)) return;
-
-            appData.savings.push({
-                id: 'sav-' + Date.now(),
-                title: title,
-                target: Number(target),
-                current: 0
-            });
-            saveData();
-            showToast('New savings goal created!');
-        }
-
-        function deleteSavings(id) {
-            appData.savings = appData.savings.filter(s => s.id !== id);
-            saveData();
-            showToast('Savings goal deleted');
-        }
-
-        function openSavingsAction(id) {
-            const goal = appData.savings.find(s => s.id === id);
-            if (!goal) return;
-            document.getElementById('savings-goal-id').value = id;
-            document.getElementById('savings-modal-title').innerText = goal.title;
-            openModal('savings-action-modal');
-        }
-
-        function setSavingsActionType(type) {
-            document.getElementById('savings-action-type').value = type;
-            if (type === 'DEPOSIT') {
-                document.getElementById('sav-type-dep-btn').className = "py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 shadow";
-                document.getElementById('sav-type-with-btn').className = "py-2 rounded-xl text-xs font-bold text-slate-600";
-            } else {
-                document.getElementById('sav-type-with-btn').className = "py-2 rounded-xl text-xs font-bold text-white bg-rose-600 shadow";
-                document.getElementById('sav-type-dep-btn').className = "py-2 rounded-xl text-xs font-bold text-slate-600";
-            }
-        }
-
-        function handleSavingsAction(e) {
-            e.preventDefault();
-            const id = document.getElementById('savings-goal-id').value;
-            const type = document.getElementById('savings-action-type').value;
-            const amount = Number(document.getElementById('savings-action-amount').value);
-
-            const goal = appData.savings.find(s => s.id === id);
-            if (goal) {
-                if (type === 'DEPOSIT') {
-                    goal.current += amount;
-                } else {
-                    goal.current = Math.max(0, goal.current - amount);
-                }
-                saveData();
-                closeModal('savings-action-modal');
-                showToast('Savings updated!');
-            }
-        }
-
-        // --- BUDGET LOGIC ---
-        function renderBudget() {
-            const totalExp = appData.expenses.reduce((sum, item) => sum + Number(item.amount), 0);
-            const totalLimit = appData.budget.totalLimit || 1;
-            const pctSpent = Math.min(100, Math.round((totalExp / totalLimit) * 100));
-
-            document.getElementById('budget-total-val').innerText = formatPHP(totalLimit);
-            document.getElementById('budget-total-progress-bar').style.width = `${pctSpent}%`;
-            document.getElementById('budget-spent-lbl').innerText = `Spent: ${formatPHP(totalExp)}`;
-            document.getElementById('budget-remain-lbl').innerText = `Remaining: ${formatPHP(Math.max(0, totalLimit - totalExp))}`;
-
-            // Category Level Budgets
-            const container = document.getElementById('budget-categories-container');
-            const categories = Object.keys(appData.budget.categories);
-
-            container.innerHTML = categories.map(cat => {
-                const limit = appData.budget.categories[cat] || 0;
-                const spent = appData.expenses.filter(e => e.category === cat).reduce((sum, e) => sum + Number(e.amount), 0);
-                const catPct = limit > 0 ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
-                const isOver = spent > limit && limit > 0;
-
-                return `
-                    <div class="space-y-1.5 cursor-pointer" onclick="setCategoryBudget('${cat}')">
-                        <div class="flex justify-between text-xs">
-                            <span class="font-semibold text-slate-700">${cat}</span>
-                            <span class="${isOver ? 'text-rose-600 font-bold' : 'text-slate-500'}">${formatPHP(spent)} / ${formatPHP(limit)} (${catPct}%)</span>
-                        </div>
-                        <div class="w-full bg-sand h-2 rounded-full overflow-hidden">
-                            <div class="${isOver ? 'bg-rose-500' : 'bg-dusty'} h-full transition-all duration-300" style="width: ${catPct}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function promptTotalBudget() {
-            const newLim = prompt("Enter total monthly budget limit (₱):", appData.budget.totalLimit);
-            if (newLim && !isNaN(newLim)) {
-                appData.budget.totalLimit = Number(newLim);
-                saveData();
-                showToast('Total budget updated');
-            }
-        }
-
-        function setCategoryBudget(cat) {
-            const curLim = appData.budget.categories[cat] || 0;
-            const newLim = prompt(`Set budget limit for ${cat} (₱):`, curLim);
-            if (newLim !== null && !isNaN(newLim)) {
-                appData.budget.categories[cat] = Number(newLim);
-                saveData();
-                showToast(`Budget for ${cat} updated`);
-            }
-        }
-
-        function checkBudgetWarnings() {
-            const warnBox = document.getElementById('expense-budget-warnings');
-            let warnings = [];
-
-            Object.keys(appData.budget.categories).forEach(cat => {
-                const limit = appData.budget.categories[cat];
-                if (limit > 0) {
-                    const spent = appData.expenses.filter(e => e.category === cat).reduce((sum, e) => sum + Number(e.amount), 0);
-                    if (spent >= limit) {
-                        warnings.push(`⚠️ Exceeded 100% budget limit for <b>${cat}</b> (${formatPHP(spent)} spent / ${formatPHP(limit)} limit)`);
-                    } else if (spent >= limit * 0.8) {
-                        warnings.push(`⚡ Nearing limit for <b>${cat}</b> (80%+ budget used)`);
-                    }
-                }
-            });
-
-            if (warnings.length > 0) {
-                warnBox.classList.remove('hidden');
-                warnBox.innerHTML = warnings.map(w => `
-                    <div class="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs flex items-center space-x-2">
-                        <span>${w}</span>
-                    </div>
-                `).join('');
-            } else {
-                warnBox.classList.add('hidden');
-            }
-        }
-
-        // --- BILLS LOGIC ---
-        function renderBills() {
-            const container = document.getElementById('bills-list-container');
-            if (appData.bills.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 italic py-4">No recurring bills added.</p>`;
-                return;
-            }
-
-            container.innerHTML = appData.bills.map(bil => `
-                <div class="p-4 bg-white rounded-3xl border ${bil.status === 'PAID' ? 'border-emerald-100 bg-emerald-50/20' : 'border-blush-100'} shadow-sm flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-800">${bil.title}</h4>
-                        <p class="text-[10px] text-slate-400">Due: ${bil.dueDate}</p>
-                        <span class="text-xs font-semibold text-slate-700">${formatPHP(bil.amount)}</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="toggleBillStatus('${bil.id}')" class="text-xs px-3 py-1.5 rounded-xl font-semibold ${bil.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-blush-100 text-dusty'}">
-                            ${bil.status === 'PAID' ? 'Paid ✓' : 'Mark Paid'}
-                        </button>
-                        <button onclick="deleteBill('${bil.id}')" class="text-slate-400 hover:text-rose-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                </div>
-            `).join('');
-
-            lucide.createIcons();
-        }
-
-        function toggleBillStatus(id) {
-            const bill = appData.bills.find(b => b.id === id);
-            if (bill) {
-                bill.status = bill.status === 'PAID' ? 'UNPAID' : 'PAID';
-                saveData();
-                showToast('Bill status updated');
-            }
-        }
-
-        function deleteBill(id) {
-            appData.bills = appData.bills.filter(b => b.id !== id);
-            saveData();
-            showToast('Bill removed');
-        }
-
-        function openBillModal() {
-            const title = prompt("Enter Bill Name (e.g., Water Bill):");
-            if (!title) return;
-            const amount = prompt("Monthly Amount (₱):");
-            if (!amount || isNaN(amount)) return;
-            const dueDate = prompt("Due Date (YYYY-MM-DD):", new Date().toISOString().split('T')[0]);
-
-            appData.bills.push({
-                id: 'bil-' + Date.now(),
-                title: title,
-                amount: Number(amount),
-                dueDate: dueDate || 'Monthly',
-                status: 'UNPAID'
-            });
-            saveData();
-            showToast('Bill added');
-        }
-
-        // --- REPORTS & EXPORT ---
-        function renderReports() {
-            const totalInc = appData.income.reduce((sum, item) => sum + Number(item.amount), 0);
-            const totalExp = appData.expenses.reduce((sum, item) => sum + Number(item.amount), 0);
-
-            document.getElementById('report-total-income').innerText = formatPHP(totalInc);
-            document.getElementById('report-total-expense').innerText = formatPHP(totalExp);
-            document.getElementById('report-net-savings').innerText = formatPHP(totalInc - totalExp);
-            document.getElementById('report-goals-count').innerText = `${appData.savings.length} Active Goals`;
-        }
-
-        function exportDataJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `MyMoneyRules_Backup_${new Date().toISOString().split('T')[0]}.json`);
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-            showToast('Backup downloaded successfully!');
-        }
-
-        function importDataJSON(e) {
-            const fileReader = new FileReader();
-            fileReader.onload = function(event) {
-                try {
-                    const parsed = JSON.parse(event.target.result);
-                    if (parsed.expenses && parsed.income) {
-                        appData = parsed;
-                        saveData();
-                        showToast('Data restored successfully!');
-                    } else {
-                        alert('Invalid backup file format.');
-                    }
-                } catch (err) {
-                    alert('Error parsing JSON file.');
-                }
-            };
-            fileReader.readAsText(e.target.files[0]);
-        }
-
-        function resetDataPrompt() {
-            if (confirm("Are you sure you want to reset all data back to default sample records?")) {
-                appData = DEFAULT_STATE;
-                saveData();
-                showToast('Data reset to defaults');
-            }
-        }
-
-        // --- CHARTS INITIALIZATION ---
-        function initCharts() {
-            const ctxSpending = document.getElementById('chart-spending').getContext('2d');
-            spendingChart = new Chart(ctxSpending, {
-                type: 'doughnut',
-                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#f472b6', '#be185d', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa'] }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
-            });
-
-            const ctxIncVsExp = document.getElementById('chart-income-vs-expense').getContext('2d');
-            incVsExpChart = new Chart(ctxIncVsExp, {
-                type: 'bar',
-                data: {
-                    labels: ['Finances'],
-                    datasets: [
-                        { label: 'Income', data: [0], backgroundColor: '#10b981', borderRadius: 8 },
-                        { label: 'Expense', data: [0], backgroundColor: '#f43f5e', borderRadius: 8 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
-            });
-        }
-
-        function updateCharts() {
-            if (!spendingChart || !incVsExpChart) return;
-
-            // Update Spending Doughnut Chart
-            const catMap = {};
-            appData.expenses.forEach(e => {
-                catMap[e.category] = (catMap[e.category] || 0) + Number(e.amount);
-            });
-
-            spendingChart.data.labels = Object.keys(catMap);
-            spendingChart.data.datasets[0].data = Object.values(catMap);
-            spendingChart.update();
-
-            // Update Inc vs Exp Bar Chart
-            const totalInc = appData.income.reduce((sum, i) => sum + Number(i.amount), 0);
-            const totalExp = appData.expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-
-            incVsExpChart.data.datasets[0].data = [totalInc];
-            incVsExpChart.data.datasets[1].data = [totalExp];
-            incVsExpChart.update();
-        }
-
-        // --- QUICK ACTION MODAL HANDLERS ---
-        function setQuickType(type) {
-            document.getElementById('quick-type').value = type;
-            const catSelect = document.getElementById('quick-category');
-
-            if (type === 'EXPENSE') {
-                document.getElementById('quick-type-expense-btn').className = "py-2 rounded-xl text-xs font-bold text-white bg-dusty shadow";
-                document.getElementById('quick-type-income-btn').className = "py-2 rounded-xl text-xs font-bold text-slate-600";
-                catSelect.innerHTML = `
-                    <option value="Food">Food</option>
-                    <option value="Transportation">Transportation</option>
-                    <option value="Groceries">Groceries</option>
-                    <option value="Shopping">Shopping</option>
-                    <option value="Bills">Bills</option>
-                    <option value="Personal Care">Personal Care</option>
-                    <option value="Family">Family</option>
-                    <option value="Education">Education</option>
-                    <option value="Health">Health</option>
-                    <option value="Entertainment">Entertainment</option>
-                    <option value="Other">Other</option>
-                `;
-            } else {
-                document.getElementById('quick-type-income-btn').className = "py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 shadow";
-                document.getElementById('quick-type-expense-btn').className = "py-2 rounded-xl text-xs font-bold text-slate-600";
-                catSelect.innerHTML = `
-                    <option value="Salary">Salary</option>
-                    <option value="Bonus">Bonus</option>
-                    <option value="Allowance">Allowance</option>
-                    <option value="Side Hustle">Side Hustle</option>
-                    <option value="Other">Other</option>
-                `;
-            }
-        }
-
-        function handleQuickSubmit(e) {
-            e.preventDefault();
-            const type = document.getElementById('quick-type').value;
-            const title = document.getElementById('quick-title').value;
-            const amount = Number(document.getElementById('quick-amount').value);
-            const category = document.getElementById('quick-category').value;
-            const date = document.getElementById('quick-date').value;
-
-            const entry = { id: (type === 'EXPENSE' ? 'exp-' : 'inc-') + Date.now(), title, amount, category, date };
-
-            if (type === 'EXPENSE') {
-                appData.expenses.unshift(entry);
-            } else {
-                appData.income.unshift(entry);
-            }
-
-            saveData();
-            closeModal('quick-action-modal');
-            document.getElementById('quick-entry-form').reset();
-            document.getElementById('quick-date').valueAsDate = new Date();
-            showToast(`${type === 'EXPENSE' ? 'Expense' : 'Income'} added successfully!`);
-        }
-
-        // --- HELPER UTILITIES ---
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            toast.classList.remove('translate-y-[-150%]', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-[-150%]', 'opacity-0');
-            }, 2500);
-        }
-    </script>
+<body>
+
+<header>
+ <div class="brand">💜 My Money Tracker</div>
+ <div class="sub" id="today"></div>
+ <div class="sub" style="margin-top:25px">TOTAL BALANCE</div>
+ <div class="balance" id="balance">₱0.00</div>
+ <div class="quick">
+  <div><small>Total Income</small><strong id="income">₱0.00</strong></div>
+  <div><small>Total Expenses</small><strong id="expense">₱0.00</strong></div>
+ </div>
+</header>
+
+<main>
+
+<section id="home">
+ <h2>Dashboard</h2>
+ <div class="grid">
+  <div class="card"><div class="muted">Monthly Income</div><div class="metric green" id="mi">₱0</div></div>
+  <div class="card"><div class="muted">Monthly Expenses</div><div class="metric red" id="me">₱0</div></div>
+  <div class="card"><div class="muted">Budget Remaining</div><div class="metric" id="bl">₱0</div></div>
+  <div class="card"><div class="muted">Total Savings</div><div class="metric" id="sv">₱0</div></div>
+ </div>
+ <h2>Recent Transactions</h2>
+ <div class="panel" id="recent"></div>
+ <h2>Monthly Spending</h2>
+ <div class="panel"><canvas id="homeChart" class="chart"></canvas></div>
+</section>
+
+<section id="activity" class="hidden">
+ <h2>Income & Expenses</h2>
+ <button class="primary" onclick="transaction()">＋ Add Transaction</button>
+ <div class="panel" style="margin-top:12px">
+  <label>Filter by month</label>
+  <input type="month" id="filterMonth">
+  <label>Transaction type</label>
+  <select id="filterType" onchange="renderActivity()">
+   <option value="All">All</option>
+   <option>Income</option>
+   <option>Expense</option>
+  </select>
+ </div>
+ <div class="panel" id="transactions"></div>
+</section>
+
+<section id="budgetPage" class="hidden">
+ <h2>Monthly Budget</h2>
+ <div class="panel">
+  <label>Monthly Budget (₱)</label>
+  <input type="number" id="budgetInput" min="0" placeholder="Enter budget">
+  <div class="actions"><button class="primary" onclick="saveBudget()">Save Budget</button></div>
+ </div>
+ <div class="panel">
+  <div class="muted">Amount spent</div>
+  <div class="metric" id="spent">₱0</div>
+  <div class="progress"><i id="budgetBar"></i></div>
+  <div id="budgetMessage" class="muted"></div>
+ </div>
+</section>
+
+<section id="savingsPage" class="hidden">
+ <h2>Savings Tracker</h2>
+ <button class="primary" onclick="goalForm()">＋ Create Savings Goal</button>
+ <div id="goals" style="margin-top:12px"></div>
+</section>
+
+<section id="sharedPage" class="hidden">
+ <h2>Kim & You</h2>
+ <button class="primary" onclick="sharedForm()">＋ Add Shared Expense</button>
+ <div class="grid" style="margin-top:12px">
+  <div class="card"><div class="muted">Kim Paid</div><div class="metric" id="kimPaid">₱0</div></div>
+  <div class="card"><div class="muted">You Paid</div><div class="metric" id="youPaid">₱0</div></div>
+ </div>
+ <div class="panel">
+  <div class="muted">50/50 Settlement</div>
+  <div class="metric" id="settlement">Even na kayo!</div>
+  <div class="muted" id="settlementNote"></div>
+ </div>
+ <div class="panel" id="sharedList"></div>
+</section>
+
+<section id="debtPage" class="hidden">
+ <h2>Debt & Installments</h2>
+ <button class="primary" onclick="debtForm()">＋ Add Debt</button>
+ <div id="debts" style="margin-top:12px"></div>
+</section>
+
+<section id="reportsPage" class="hidden">
+ <h2>Financial Reports</h2>
+ <div class="panel">
+  <label>Select Month</label>
+  <input type="month" id="reportMonth" onchange="renderReports()">
+  <div class="grid">
+   <div><div class="muted">Income</div><div class="metric green" id="ri">₱0</div></div>
+   <div><div class="muted">Expenses</div><div class="metric red" id="re">₱0</div></div>
+   <div><div class="muted">Net Savings</div><div class="metric" id="rn">₱0</div></div>
+   <div><div class="muted">Transactions</div><div class="metric" id="rc">0</div></div>
+  </div>
+ </div>
+ <div class="panel"><canvas id="reportChart" class="chart"></canvas></div>
+ <div class="panel"><h3>Expenses by Category</h3><div id="categories"></div></div>
+</section>
+
+<section id="settingsPage" class="hidden">
+ <h2>Settings & Backup</h2>
+ <div class="panel">
+  <p class="muted">Your records are saved in this browser on this device.</p>
+  <div class="actions">
+   <button class="primary" onclick="exportData()">Export Backup</button>
+   <button class="secondary" onclick="document.getElementById('importFile').click()">Import Backup</button>
+   <button class="danger" onclick="resetData()">Delete All Data</button>
+  </div>
+  <input type="file" id="importFile" accept=".json,application/json" hidden onchange="importData(event)">
+ </div>
+</section>
+
+</main>
+
+<nav class="tabs">
+ <button class="active" onclick="showPage('home',this)"><span>⌂</span>Home</button>
+ <button onclick="showPage('activity',this)"><span>↕</span>Activity</button>
+ <button onclick="showPage('budgetPage',this)"><span>▤</span>Budget</button>
+ <button onclick="showPage('savingsPage',this)"><span>♡</span>Savings</button>
+ <button onclick="showPage('sharedPage',this)"><span>⇄</span>Shared</button>
+ <button onclick="showPage('debtPage',this)"><span>▣</span>Debt</button>
+ <button onclick="showPage('reportsPage',this)"><span>▥</span>Reports</button>
+ <button onclick="showPage('settingsPage',this)"><span>⚙</span>More</button>
+</nav>
+
+<div class="modal" id="modal">
+ <div class="sheet">
+  <div class="sheethead"><h3 id="modalTitle">Add</h3><button class="close" onclick="closeModal()">✕</button></div>
+  <div id="modalContent"></div>
+ </div>
+</div>
+
+<script>
+const KEY="moneyTracker2026";
+const emptyData=()=>({transactions:[],budget:0,goals:[],shared:[],debts:[]});
+let data=loadData();
+
+function loadData(){
+ try{return {...emptyData(),...JSON.parse(localStorage.getItem(KEY)||"{}")}}
+ catch(e){return emptyData()}
+}
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(data));
+ renderAll();
+}
+function money(n){
+ return "₱"+(Number(n)||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function month(){
+ return new Date().toISOString().slice(0,7);
+}
+function makeId(){
+ return Date.now().toString(36)+Math.random().toString(36).slice(2);
+}
+function safe(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function currentTransactions(m=month()){
+ return data.transactions.filter(t=>t.date.startsWith(m));
+}
+function showPage(id,button){
+ document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ renderAll();
+}
+function openModal(title,html){
+ document.getElementById("modalTitle").textContent=title;
+ document.getElementById("modalContent").innerHTML=html;
+ document.getElementById("modal").classList.add("open");
+}
+function closeModal(){
+ document.getElementById("modal").classList.remove("open");
+}
+document.getElementById("modal").addEventListener("click",e=>{
+ if(e.target.id==="modal")closeModal();
+});
+
+function transaction(id=null){
+ let t=data.transactions.find(x=>x.id===id)||{};
+ openModal(id?"Edit Transaction":"Add Transaction",`
+ <form id="txForm">
+ <div class="formgrid">
+ <div><label>Type</label>
+ <select name="type">
+ <option ${t.type!=="Expense"?"selected":""}>Income</option>
+ <option ${t.type==="Expense"?"selected":""}>Expense</option>
+ </select></div>
+ <div><label>Amount (₱)</label><input name="amount" type="number" min=".01" step=".01" required value="${t.amount||""}"></div>
+ <div class="full"><label>Description</label><input name="description" required value="${safe(t.description||"")}"></div>
+ <div><label>Category</label>
+ <select name="category">
+ ${["Salary","Food","Bills","Transport","Shopping","Health","Education","Home","Entertainment","Other"].map(c=>`<option ${t.category===c?"selected":""}>${c}</option>`).join("")}
+ </select></div>
+ <div><label>Date</label><input name="date" type="date" required value="${t.date||new Date().toISOString().slice(0,10)}"></div>
+ </div>
+ <div class="actions"><button class="primary">Save Transaction</button>
+ ${id?`<button type="button" class="danger" onclick="deleteTransaction('${id}')">Delete</button>`:""}
+ </div>
+ </form>`);
+ document.getElementById("txForm").onsubmit=e=>{
+  e.preventDefault();
+  const f=new FormData(e.target);
+  const obj={id:t.id||makeId(),type:f.get("type"),amount:Number(f.get("amount")),description:f.get("description"),category:f.get("category"),date:f.get("date")};
+  if(id)data.transactions=data.transactions.map(x=>x.id===id?obj:x);
+  else data.transactions.unshift(obj);
+  closeModal();save();
+ };
+}
+function deleteTransaction(id){
+ if(confirm("Delete this transaction?")){
+  data.transactions=data.transactions.filter(t=>t.id!==id);
+  closeModal();save();
+ }
+}
+function transactionHTML(t){
+ return `<div class="row">
+ <div><b>${safe(t.description)}</b><div class="muted">${safe(t.category)} · ${t.date}</div></div>
+ <div style="text-align:right">
+ <b class="${t.type==="Income"?"green":"red"}">${t.type==="Income"?"+":"-"}${money(t.amount)}</b><br>
+ <button class="secondary" onclick="transaction('${t.id}')">Edit</button>
+ </div></div>`;
+}
+function renderActivity(){
+ const m=document.getElementById("filterMonth").value||month();
+ const type=document.getElementById("filterType").value;
+ const list=data.transactions.filter(t=>t.date.startsWith(m)&&(type==="All"||t.type===type));
+ document.getElementById("transactions").innerHTML=list.length?list.map(transactionHTML).join(""):'<div class="empty">No transactions found.</div>';
+}
+
+function saveBudget(){
+ data.budget=Math.max(0,Number(document.getElementById("budgetInput").value)||0);
+ save();alert("Budget saved!");
+}
+function renderBudget(){
+ const spent=currentTransactions().filter(t=>t.type==="Expense").reduce((s,t)=>s+t.amount,0);
+ const remaining=data.budget-spent;
+ const pct=data.budget?Math.min(100,spent/data.budget*100):0;
+ document.getElementById("budgetInput").value=data.budget||"";
+ document.getElementById("spent").textContent=money(spent);
+ document.getElementById("budgetBar").style.width=pct+"%";
+ document.getElementById("budgetMessage").textContent=data.budget?(remaining>=0?money(remaining)+" remaining": "Over budget by "+money(-remaining)):"Set your monthly budget.";
+}
+
+function goalForm(id=null){
+ let g=data.goals.find(x=>x.id===id)||{};
+ openModal("Savings Goal",`
+ <form id="goalForm">
+ <label>Goal Name</label><input name="name" required value="${safe(g.name||"")}" placeholder="Emergency Fund">
+ <div class="formgrid">
+ <div><label>Target Amount</label><input name="target" type="number" min="1" required value="${g.target||""}"></div>
+ <div><label>Saved Amount</label><input name="saved" type="number" min="0" value="${g.saved||0}"></div>
+ </div>
+ <div class="actions"><button class="primary">Save Goal</button>
+ ${id?`<button type="button" class="danger" onclick="deleteGoal('${id}')">Delete</button>`:""}
+ </div></form>`);
+ document.getElementById("goalForm").onsubmit=e=>{
+  e.preventDefault();
+  const f=new FormData(e.target);
+  const obj={id:g.id||makeId(),name:f.get("name"),target:Number(f.get("target")),saved:Number(f.get("saved"))};
+  if(id)data.goals=data.goals.map(x=>x.id===id?obj:x);
+  else data.goals.push(obj);
+  closeModal();save();
+ };
+}
+function addSaving(id){
+ const g=data.goals.find(x=>x.id===id);
+ const amount=prompt("How much will you add to "+g.name+"?");
+ if(amount===null)return;
+ if(!Number.isFinite(Number(amount))||Number(amount)<=0)return alert("Enter a valid amount.");
+ g.saved+=Number(amount);save();
+}
+function deleteGoal(id){
+ if(confirm("Delete this savings goal?")){
+  data.goals=data.goals.filter(g=>g.id!==id);
+  closeModal();save();
+ }
+}
+function renderGoals(){
+ document.getElementById("goals").innerHTML=data.goals.length?data.goals.map(g=>{
+  const pct=Math.min(100,g.target?g.saved/g.target*100:0);
+  return `<div class="panel">
+  <div class="row"><b>${safe(g.name)}</b><b>${pct.toFixed(0)}%</b></div>
+  <div class="metric">${money(g.saved)}</div><div class="muted">Target: ${money(g.target)}</div>
+  <div class="progress"><i style="width:${pct}%"></i></div>
+  <div class="actions">
+  <button class="primary" onclick="addSaving('${g.id}')">＋ Add Savings</button>
+  <button class="secondary" onclick="goalForm('${g.id}')">Edit</button>
+  </div></div>`;
+ }).join(""):'<div class="panel empty">No savings goals yet.</div>';
+}
+
+function sharedForm(id=null){
+ let s=data.shared.find(x=>x.id===id)||{};
+ openModal("Shared Expense",`
+ <form id="sharedForm">
+ <label>Description</label><input name="description" required value="${safe(s.description||"")}" placeholder="Groceries">
+ <div class="formgrid">
+ <div><label>Total Amount</label><input name="amount" type="number" min=".01" step=".01" required value="${s.amount||""}"></div>
+ <div><label>Paid By</label><select name="payer">
+ <option ${s.payer!=="You"?"selected":""}>Kim</option>
+ <option ${s.payer==="You"?"selected":""}>You</option>
+ </select></div>
+ <div class="full"><label>Date</label><input name="date" type="date" required value="${s.date||new Date().toISOString().slice(0,10)}"></div>
+ </div>
+ <div class="actions"><button class="primary">Save Expense</button>
+ ${id?`<button type="button" class="danger" onclick="deleteShared('${id}')">Delete</button>`:""}
+ </div></form>`);
+ document.getElementById("sharedForm").onsubmit=e=>{
+  e.preventDefault();
+  const f=new FormData(e.target);
+  const obj={id:s.id||makeId(),description:f.get("description"),amount:Number(f.get("amount")),payer:f.get("payer"),date:f.get("date")};
+  if(id)data.shared=data.shared.map(x=>x.id===id?obj:x);
+  else data.shared.unshift(obj);
+  closeModal();save();
+ };
+}
+function deleteShared(id){
+ if(confirm("Delete shared expense?")){
+  data.shared=data.shared.filter(x=>x.id!==id);
+  closeModal();save();
+ }
+}
+function renderShared(){
+ const kim=data.shared.filter(s=>s.payer==="Kim").reduce((a,s)=>a+s.amount,0);
+ const you=data.shared.filter(s=>s.payer==="You").reduce((a,s)=>a+s.amount,0);
+ const diff=(kim-you)/2;
+ document.getElementById("kimPaid").textContent=money(kim);
+ document.getElementById("youPaid").textContent=money(you);
+ document.getElementById("settlement").textContent=Math.abs(diff)<.005?"Even na kayo!":diff>0?"You owe Kim "+money(diff):"Kim owes you "+money(-diff);
+ document.getElementById("settlementNote").textContent="Total shared expenses: "+money(kim+you)+". Split equally 50/50.";
+ document.getElementById("sharedList").innerHTML=data.shared.length?data.shared.map(s=>`
+ <div class="row"><div><b>${safe(s.description)}</b><div class="muted">${s.date} · Paid by ${s.payer}</div></div>
+ <div style="text-align:right"><b>${money(s.amount)}</b><br><button class="secondary" onclick="sharedForm('${s.id}')">Edit</button></div></div>`).join(""):'<div class="empty">No shared expenses yet.</div>';
+}
+
+function debtForm(id=null){
+ let d=data.debts.find(x=>x.id===id)||{};
+ openModal("Debt / Installment",`
+ <form id="debtForm">
+ <label>Debt Name</label><input name="name" required value="${safe(d.name||"")}" placeholder="Phone installment">
+ <div class="formgrid">
+ <div><label>Total Amount</label><input name="total" type="number" min=".01" required value="${d.total||""}"></div>
+ <div><label>Already Paid</label><input name="paid" type="number" min="0" value="${d.paid||0}"></div>
+ <div><label>Monthly Payment</label><input name="monthly" type="number" min="0" value="${d.monthly||0}"></div>
+ <div><label>Due Day</label><input name="due" type="number" min="1" max="31" value="${d.due||""}"></div>
+ </div>
+ <div class="actions"><button class="primary">Save Debt</button>
+ ${id?`<button type="button" class="danger" onclick="deleteDebt('${id}')">Delete</button>`:""}
+ </div></form>`);
+ document.getElementById("debtForm").onsubmit=e=>{
+  e.preventDefault();
+  const f=new FormData(e.target);
+  const obj={id:d.id||makeId(),name:f.get("name"),total:Number(f.get("total")),paid:Number(f.get("paid")),monthly:Number(f.get("monthly")),due:f.get("due")};
+  if(obj.paid>obj.total)return alert("Paid amount cannot exceed total amount.");
+  if(id)data.debts=data.debts.map(x=>x.id===id?obj:x);
+  else data.debts.push(obj);
+  closeModal();save();
+ };
+}
+function payDebt(id){
+ const d=data.debts.find(x=>x.id===id);
+ const n=prompt("Enter payment amount. Remaining: "+money(d.total-d.paid));
+ if(n===null)return;
+ if(!Number.isFinite(Number(n))||Number(n)<=0)return alert("Enter a valid payment.");
+ d.paid=Math.min(d.total,d.paid+Number(n));save();
+}
+function deleteDebt(id){
+ if(confirm("Delete this debt?")){
+  data.debts=data.debts.filter(x=>x.id!==id);
+  closeModal();save();
+ }
+}
+function renderDebts(){
+ document.getElementById("debts").innerHTML=data.debts.length?data.debts.map(d=>{
+  const remaining=Math.max(0,d.total-d.paid);
+  const pct=Math.min(100,d.paid/d.total*100);
+  return `<div class="panel">
+  <div class="row"><b>${safe(d.name)}</b><span class="muted">${remaining===0?"PAID":"IN PROGRESS"}</span></div>
+  <div class="metric">${money(remaining)}</div><div class="muted">Remaining balance</div>
+  <div class="progress"><i style="width:${pct}%"></i></div>
+  <div class="muted">Paid ${money(d.paid)} of ${money(d.total)}</div>
+  <div class="muted">Monthly: ${money(d.monthly)} ${d.due?"· Due day "+d.due:""}</div>
+  <div class="actions">
+  <button class="primary" onclick="payDebt('${d.id}')">Record Payment</button>
+  <button class="secondary" onclick="debtForm('${d.id}')">Edit</button>
+  </div></div>`;
+ }).join(""):'<div class="panel empty">No debts added yet.</div>';
+}
+
+function drawChart(id,values,labels){
+ const c=document.getElementById(id);
+ if(!c)return;
+ const w=c.clientWidth||300,h=c.clientHeight||200,dpr=window.devicePixelRatio||1;
+ c.width=w*dpr;c.height=h*dpr;
+ const ctx=c.getContext("2d");
+ ctx.scale(dpr,dpr);
+ ctx.clearRect(0,0,w,h);
+ const max=Math.max(1,...values);
+ const bar=Math.min(45,w/(values.length*2.5));
+ const gap=(w-values.length*bar)/(values.length+1);
+ values.forEach((v,i)=>{
+  const height=(h-45)*v/max;
+  const x=gap+i*(bar+gap);
+  ctx.fillStyle=["#7968c9","#229b78","#e7a04b"][i%3];
+  ctx.fillRect(x,h-30-height,bar,height);
+  ctx.fillStyle="#777";
+  ctx.font="11px Arial";
+  ctx.textAlign="center";
+  ctx.fillText(labels[i],x+bar/2,h-10);
+ });
+}
+
+function renderReports(){
+ const m=document.getElementById("reportMonth").value||month();
+ const arr=currentTransactions(m);
+ const inc=arr.filter(t=>t.type==="Income").reduce((s,t)=>s+t.amount,0);
+ const exp=arr.filter(t=>t.type==="Expense").reduce((s,t)=>s+t.amount,0);
+ document.getElementById("ri").textContent=money(inc);
+ document.getElementById("re").textContent=money(exp);
+ document.getElementById("rn").textContent=money(inc-exp);
+ document.getElementById("rc").textContent=arr.length;
+ drawChart("reportChart",[inc,exp],["Income","Expenses"]);
+ const cats={};
+ arr.filter(t=>t.type==="Expense").forEach(t=>cats[t.category]=(cats[t.category]||0)+t.amount);
+ document.getElementById("categories").innerHTML=Object.keys(cats).length?Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="row"><span>${safe(k)}</span><b>${money(v)}</b></div>`).join(""):'<div class="empty">No expenses recorded.</div>';
+}
+
+function renderHome(){
+ const allInc=data.transactions.filter(t=>t.type==="Income").reduce((s,t)=>s+t.amount,0);
+ const allExp=data.transactions.filter(t=>t.type==="Expense").reduce((s,t)=>s+t.amount,0);
+ const arr=currentTransactions();
+ const inc=arr.filter(t=>t.type==="Income").reduce((s,t)=>s+t.amount,0);
+ const exp=arr.filter(t=>t.type==="Expense").reduce((s,t)=>s+t.amount,0);
+ document.getElementById("balance").textContent=money(allInc-allExp);
+ document.getElementById("income").textContent=money(allInc);
+ document.getElementById("expense").textContent=money(allExp);
+ document.getElementById("mi").textContent=money(inc);
+ document.getElementById("me").textContent=money(exp);
+ document.getElementById("bl").textContent=money(data.budget-exp);
+ document.getElementById("sv").textContent=money(data.goals.reduce((s,g)=>s+g.saved,0));
+ const recent=data.transactions.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+ document.getElementById("recent").innerHTML=recent.length?recent.map(transactionHTML).join(""):'<div class="empty">No transactions yet. Start by adding one!</div>';
+ const cats={};
+ arr.filter(t=>t.type==="Expense").forEach(t=>cats[t.category]=(cats[t.category]||0)+t.amount);
+ const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ drawChart("homeChart",entries.map(x=>x[1]),entries.map(x=>x[0].slice(0,8)));
+}
+
+function renderAll(){
+ renderHome();
+ renderActivity();
+ renderBudget();
+ renderGoals();
+ renderShared();
+ renderDebts();
+ renderReports();
+}
+function exportData(){
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download="money-tracker-backup.json";a.click();
+ URL.revokeObjectURL(url);
+}
+function importData(e){
+ const file=e.target.files[0];
+ if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const d=JSON.parse(reader.result);
+   if(!d||!Array.isArray(d.transactions)||!Array.isArray(d.goals)||!Array.isArray(d.shared)||!Array.isArray(d.debts))throw Error();
+   if(confirm("Replace current data with this backup?")){
+    data={...emptyData(),...d};save();alert("Backup restored!");
+   }
+  }catch(err){alert("Invalid backup file.");}
+  e.target.value="";
+ };
+ reader.readAsText(file);
+}
+function resetData(){
+ if(confirm("Delete ALL your Money Tracker data? This cannot be undone.")){
+  data=emptyData();save();alert("All data deleted.");
+ }
+}
+
+document.getElementById("today").textContent=new Date().toLocaleDateString("en-PH",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+document.getElementById("filterMonth").value=month();
+document.getElementById("filterMonth").onchange=renderActivity;
+document.getElementById("reportMonth").value=month();
+
+renderAll();
+</script>
 </body>
 </html>
